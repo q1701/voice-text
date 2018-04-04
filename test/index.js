@@ -17,6 +17,13 @@ describe('VoiceText', () => {
     assert(fileType(body).mime === 'audio/x-wav');
   });
 
+  it('fetch mp3', async () => {
+    const { body } = await voiceText.fetch('hello', { format: 'mp3' });
+
+    assert(Buffer.isBuffer(body));
+    assert(fileType(body).mime === 'audio/mpeg');
+  });
+
   it('fetchBuffer', async () => {
     const body = await voiceText.fetchBuffer('hello', { format: 'wav' });
 
@@ -43,7 +50,7 @@ describe('VoiceText', () => {
         voiceText.validate({
           text: repeating('あ', 200),
           speaker: 'bear',
-          format: 'aac',
+          format: 'wav',
           emotion: 'sadness',
           emotion_level: '4',
           pitch: '200',
@@ -53,7 +60,7 @@ describe('VoiceText', () => {
         {
           text: repeating('あ', 200),
           speaker: 'bear',
-          format: 'aac',
+          format: 'wav',
           emotion: 'sadness',
           emotion_level: 4,
           pitch: 200,
@@ -89,8 +96,8 @@ describe('VoiceText', () => {
         .message.match('"speaker" must be one of \\[hikari, haruka, takeru, santa, bear, show\\]')
       );
       assert(
-        throws(() => voiceText.validate({ text: 'foo', format: 'mp3' }))
-        .message.match('"format" must be one of \\[wav, ogg, aac\\]')
+        throws(() => voiceText.validate({ text: 'foo', format: 'aac' }))
+        .message.match('"format" must be one of \\[wav, ogg, mp3\\]')
       );
       assert(
         throws(() => voiceText.validate({ text: 'foo', emotion: 'crazy' }))

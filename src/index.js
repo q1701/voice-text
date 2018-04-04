@@ -13,7 +13,7 @@ export class VoiceText {
   static validationSchema = Joi.object({
     text: Joi.string().min(1).max(200).required(),
     speaker: Joi.string().valid('hikari', 'haruka', 'takeru', 'santa', 'bear', 'show').default('hikari'),
-    format: Joi.string().valid('wav', 'ogg', 'aac').default('ogg'),
+    format: Joi.string().valid('wav', 'ogg', 'mp3').default('ogg'),
     emotion: Joi.string().valid('happiness', 'anger', 'sadness'),
     emotion_level: Joi.number().min(1).max(4).when('emotion', { is: true, then: Joi.default(2) }),
     pitch: Joi.number().min(50).max(200).default(100),
@@ -21,7 +21,7 @@ export class VoiceText {
     volume: Joi.number().min(50).max(200).default(100),
   })
   .optionalKeys('emotion', 'emotion_level', 'pitch', 'speed', 'volume')
-  .with('emotion_level', 'emotion')
+  .with('emotion_level', 'emotion');
 
   constructor(key = process.env.VOICETEXT_APIKEY) {
     this.key = key;
@@ -30,6 +30,7 @@ export class VoiceText {
   validate(data = {}) {
     return Joi.attempt(data, this.constructor.validationSchema);
   }
+
   getUri(key, data) {
     return format('https://%s:%s@api.voicetext.jp/v1/tts?%s', key, '', queryStringify(this.validate(data)));
   }
